@@ -6,7 +6,7 @@ class Node
 	T *mData;
 public:
 	Node();
-	Node(const T);
+	Node(const T&);
 	Node(const Node<T>*);
 	Node* getNext();
 	void setNext(Node*);

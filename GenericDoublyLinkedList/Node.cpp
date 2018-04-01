@@ -4,13 +4,13 @@ template<typename T>
 Node<T>::Node() :mData(nullptr), mPrev(nullptr), mNext(nullptr) {}
 
 template<typename T>
-Node<T>::Node(const T data) : mData(data), mPrev(nullptr), mNext(nullptr) {}
+Node<T>::Node(const T &data) : mData(data), mPrev(nullptr), mNext(nullptr) {}
 
 template<typename T>
-Node<T>::Node(const Node<T>* node) :mData(node->mData), mPrev(node->mPrev), mNext(node->mNext) {}
+Node<T>::Node(const Node<T>* node) : mData(node->mData), mPrev(node->mPrev), mNext(node->mNext) {}
 
 template<typename T>
-Node * Node<T>::getNext()
+Node<T> * Node<T>::getNext()
 {
 	return mNext;
 }
@@ -18,11 +18,11 @@ Node * Node<T>::getNext()
 template<typename T>
 void Node<T>::setNext(Node *next)
 {
-	mNext=next;
+	mNext = next;
 }
 
 template<typename T>
-Node * Node<T>::getPrev()
+Node<T> * Node<T>::getPrev()
 {
 	return mPrev;
 }
