@@ -1,27 +1,211 @@
-#include "Node.h"
+#include<cstddef>
+#include<iostream>
+
+template<class T>
+class Node
+{
+	Node<T> *mPrev;
+	Node<T> *mNext;
+	T *mData;
+public:
+	Node() :mData(NULL), mPrev(NULL), mNext(NULL) {}
+	Node(T *data) : mData(data), mPrev(NULL), mNext(NULL) {}
+	Node(const Node<T> *node) : mData(node->mData), mPrev(node->mPrev), mNext(node->mNext) {}
+
+	Node<T>* getNext() {
+		return mNext;
+	}
+	void setNext(Node<T> *next) {
+		mNext = next;
+	}
+
+	Node<T>* getPrev() {
+		return mPrev;
+	}
+
+	void setPrev(Node<T> *prev) {
+		mPrev = prev;
+	}
+	void setData(Node* data) {
+		mData = data;
+	}
+
+	T* getData() {
+		return mData;
+	}
+	virtual ~Node() {
+		delete mData;
+	}
+
+};
+
 
 template<typename T>
 class LinkedList
 {
 	Node<T> *head;
 	Node<T> *tail;
-	size_t size;
+	int size;
 public:
-	LinkedList();
-	LinkedList(const size_t s);
-	LinkedList(const LinkedList& rhs);
+	LinkedList() : head(NULL), tail(NULL), size(0) {}
+	LinkedList(const int s) : head(NULL), tail(NULL), size(s)
+	{
+		Node<T> newNode = new Node;
+		Node<T> *node = &newNode;
+		for (int i = 0; i < size; i++) {
+			node->setNext(new Node<T>);
+			node = node->getNext();
+		}
+		this->head = newNode;
+	}
 
-	LinkedList<T>& operator=(const LinkedList& rhs);
-	T& operator[](const size_t index);
 
-	bool insert(const T& value);
-	bool insert(const size_t position, const T& value);
+	LinkedList(const LinkedList& rhs) {
+		LinkedList::operator=(rhs);
+	}
 
-	bool remove(const size_t position);
+	LinkedList<T>& operator=(const LinkedList& rhs) {
+		deleteList();
+		size = rhs.getSize();
+		Node<T> temp;
+		for (Node<T>* nodePtr = rhs.getHead(), *newList = &temp; nodePtr; nodePtr = nodePtr->getNext()) {
+			Node<T> newNode(nodePtr);
+			newNode->setPrev(newList);
+			newList->setNext(newNode);
+			newList = newList->getNext();
+		}
+		this->head = temp.getNext();
+		return *this;
+	}
 
-	size_t getSize();
-	Node<T>* getHead();
-	void deleteList();
-	~LinkedList();
+	T* operator[](const int index) {
+		Node<T>* nodePtr = head;
+		if (index < 0 || index >= this->size) {
+			cout << "ERROR: Subscript out of range.\n";
+		}
+		else {
+			for (int i = 0; i < index; i++)
+				nodePtr = nodePtr->getNext();
+		}
+		return nodePtr->getData();
+	}
+
+
+	bool insert( T* value) {
+		Node<T>* newNode = new Node<T>(value);
+		if (newNode == NULL)
+			return false;
+
+		if (head == NULL)
+			head = newNode;
+		else {
+			Node<T>* nodePtr = head;
+			while (nodePtr->getNext() != NULL) {
+				nodePtr = nodePtr->getNext();
+			}
+			nodePtr->setNext(newNode);
+			newNode->setPrev(nodePtr);
+		}
+		++size;
+		return true;
+	}
+
+
+	bool insert(const int position, const T& value) {
+		if (position>size || position<0)
+			return false;
+
+		Node * newNode = new Node(value);
+		if (newNode == NULL) {
+			return false;
+		}
+		if (position == 1) {
+			if (head != NULL) {
+				newNode->setNext(head);
+				head->setPrev(newNode);
+			}
+			head = newNode;
+			size++;
+			return true;
+		}
+
+		Node * prev = head;
+		for (int i = 1; i < position - 1; i++) {
+
+			prev = prev->getNext();
+
+			if (prev == NULL) {
+				delete newNode;
+				return false;
+			}
+		}
+
+		newNode->setPrev(prev);
+		if (prev->getNext()) {
+			newNode->setNext(prev->getNext());
+			prev->getNext()->setPrev(newNode);
+		}
+		prev->setNext(newNode);
+		size++;
+		return true;
+	}
+
+
+	bool remove(const int position) {
+		if (position <= 0 || head == NULL) {
+			return false;
+		}
+
+		if (position == 1) {
+
+			Node<T> * del = head;
+			head = head->getNext();
+			if (head != NULL) {
+				head->setPrev(NULL);
+			}
+			delete del;
+			--size;
+			return true;
+		}
+
+		Node<T> * del = head;
+		for (int i = 1; i < position; i++) {
+			del = del->getNext();
+			if (del == NULL) {
+				return false;
+			}
+		}
+
+		del->getPrev()->setNext(del->getNext());
+		if (del->getNext()) {
+			del->getNext()->setPrev(del->getPrev());
+		}
+
+		delete del;
+		--size;
+		return true;
+	}
+
+
+	int getSize() {
+		return size;
+	}
+
+	Node<T>* getHead() {
+		return head;
+	}
+
+	void deleteList() {
+		Node<T>* nodePtr = head;
+		while (nodePtr != NULL) {
+			Node<T>* nextNode = nodePtr->getNext();
+			delete nodePtr;
+			nodePtr = nextNode;
+		}
+	}
+
+	~LinkedList() {
+		deleteList();
+	}
 };
 
