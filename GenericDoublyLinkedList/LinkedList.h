@@ -6,10 +6,10 @@ class Node
 {
 	Node<T> *mPrev;
 	Node<T> *mNext;
-	T *mData;
+	T mData;
 public:
 	Node() :mData(NULL), mPrev(NULL), mNext(NULL) {}
-	Node(T *data) : mData(data), mPrev(NULL), mNext(NULL) {}
+	Node(T const& data) : mData(data), mPrev(NULL), mNext(NULL) {}
 	Node(const Node<T> *node) : mData(node->mData), mPrev(node->mPrev), mNext(node->mNext) {}
 
 	Node<T>* getNext() {
@@ -26,15 +26,11 @@ public:
 	void setPrev(Node<T> *prev) {
 		mPrev = prev;
 	}
-	void setData(Node* data) {
-		mData = data;
-	}
-
-	T* getData() {
+	
+	T& getData() {
 		return mData;
 	}
 	virtual ~Node() {
-		delete mData;
 	}
 
 };
@@ -60,16 +56,16 @@ public:
 	}
 
 
-	LinkedList(const LinkedList& rhs) {
+	LinkedList(LinkedList& rhs) {
 		LinkedList::operator=(rhs);
 	}
 
-	LinkedList<T>& operator=(const LinkedList& rhs) {
+	LinkedList<T>& operator=( LinkedList& rhs) {
 		deleteList();
 		size = rhs.getSize();
 		Node<T> temp;
 		for (Node<T>* nodePtr = rhs.getHead(), *newList = &temp; nodePtr; nodePtr = nodePtr->getNext()) {
-			Node<T> newNode(nodePtr);
+			Node<T> *newNode = new Node<T>(nodePtr->getData());
 			newNode->setPrev(newList);
 			newList->setNext(newNode);
 			newList = newList->getNext();
@@ -78,7 +74,7 @@ public:
 		return *this;
 	}
 
-	T* operator[](const int index) {
+	T& operator[](const int index) const {
 		Node<T>* nodePtr = head;
 		if (index < 0 || index >= this->size) {
 			cout << "ERROR: Subscript out of range.\n";
@@ -91,7 +87,7 @@ public:
 	}
 
 
-	bool insert( T* value) {
+	bool insert( T const& value) {
 		Node<T>* newNode = new Node<T>(value);
 		if (newNode == NULL)
 			return false;
