@@ -148,11 +148,11 @@ public:
 
 
 	bool remove(const int position) {
-		if (position <= 0 || head == NULL) {
+		if (position < 0 || head == NULL) {
 			return false;
 		}
 
-		if (position == 1) {
+		if (position == 0) {
 
 			Node<T> * del = head;
 			head = head->getNext();
@@ -165,7 +165,7 @@ public:
 		}
 
 		Node<T> * del = head;
-		for (int i = 1; i < position; i++) {
+		for (int i = 0; i < position; i++) {
 			del = del->getNext();
 			if (del == NULL) {
 				return false;
